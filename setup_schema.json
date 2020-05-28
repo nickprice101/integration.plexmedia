@@ -8,47 +8,59 @@
     "additionalProperties": true,
     "examples": [
         {
-            "access_token": "",
-            "client_id": "",
-            "client_secret": "",
+            "username": "",
+            "password": "",
+            "server_address": "",
+            "server_port": "",
             "entity_id" :""
         }
     ],
     "required": [
-        "access_token",
-        "client_id",
-        "client_secret",
+        "username",
+        "password",
+        "server_address",
+        "server_port",
         "entity_id"
     ],
     "properties": {
-        "access_token": {
-            "$id": "#/properties/access_token",
+        "usernamen": {
+            "$id": "#/properties/username",
             "type": "string",
-            "title": "The access_token schema",
-            "description": "Not user input. Access token generated after authenticating to Spotify.",
+            "title": "The username schema",
+            "description": "Username for the linked Plex account.",
             "default": "",
             "examples": [
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiVlx1MDAxNcKbwoNUwoonbFPCu8KhwrYiLCJpYXQiOjE0NDQyNjI1NDMsImV4cCI6MTQ0NDI2MjU2M30.MldruS1PvZaRZIJR4legQaauQ3_DYKxxP2rFnD37Ip4"
+                "bob@gmail.com"
             ]
         },
-        "client_id": {
-            "$id": "#/properties/client_id",
+        "password": {
+            "$id": "#/properties/password",
             "type": "string",
-            "title": "The client_id schema",
-            "description": "Client ID from the Spotify Developer page.",
+            "title": "The password schema",
+            "description": "Password for the linked Plex account.",
             "default": "",
             "examples": [
-                "JKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiVlx1MDAxNcKbwoNUwoonbFPCu8KhwrYiLCJpYXQiO"
+                "password"
             ]
         },
-        "client_secret": {
-            "$id": "#/properties/client_secret",
+        "server_address": {
+            "$id": "#/properties/server_address",
             "type": "string",
-            "title": "The client_secret schema",
-            "description": "Client secret from the Spotify Developer page.",
+            "title": "The server_address schema",
+            "description": "IP of the local Plex server.",
             "default": "",
             "examples": [
-                "JKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiVlx1MDAxNcKbwoNUwoonbFPCu8KhwrYiLCJpYXQiO"
+                "192.168.1.1"
+            ]
+        },
+        "server_address": {
+            "$id": "#/properties/server_port",
+            "type": "string",
+            "title": "The server_port schema",
+            "description": "Port of the local Plex server.",
+            "default": "32400",
+            "examples": [
+                "32400"
             ]
         },
         "entity_id": {
@@ -64,3 +76,4 @@
         }
     }
 }
+
