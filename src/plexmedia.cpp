@@ -695,7 +695,7 @@ void PlexMedia::sendCommand(const QString& type, const QString& entityId, int co
             getRequest(m_playerURL + "/player/playback/play", ""); //nothing passed then just play?
         } else {
             QString shuffle = "0";
-            if (command == MediaPlayerDef::C_SHUFFLE) shuffle = "1";
+            if (command == MediaPlayerDef::C_SHUFFLE_PLAY) shuffle = "1";
             if (param.toMap().contains("type")) {
                 if (param.toMap().value("type").toString() == "playlist") {
                     //need to use playQueues
