@@ -1,13 +1,14 @@
 TEMPLATE  = lib
 CONFIG   += plugin
 QT       += core quick network
+QT       += xml
 
 # Plugin VERSION
 GIT_HASH = "$$system(git log -1 --format="%H")"
 GIT_BRANCH = "$$system(git rev-parse --abbrev-ref HEAD)"
 GIT_VERSION = "$$system(git describe --match "v[0-9]*" --tags HEAD --always)"
-SPOTIFY_VERSION = $$replace(GIT_VERSION, v, "")
-DEFINES += PLUGIN_VERSION=\\\"$$SPOTIFY_VERSION\\\"
+PLEXMEDIA_VERSION = $$replace(GIT_VERSION, v, "")
+DEFINES += PLUGIN_VERSION=\\\"$$PLEXMEDIA_VERSION\\\"
 
 # build timestamp
 win32 {
@@ -54,12 +55,12 @@ unix {
     }
 }
 
-QMAKE_SUBSTITUTES += spotify.json.in version.txt.in
+QMAKE_SUBSTITUTES += plexmedia.json.in version.txt.in
 # output path must be included for the output file from QMAKE_SUBSTITUTES
 INCLUDEPATH += $$OUT_PWD
-HEADERS  += src/spotify.h
-SOURCES  += src/spotify.cpp
-TARGET    = spotify
+HEADERS  += src/plexmedia.h
+SOURCES  += src/plexmedia.cpp
+TARGET    = plexmedia
 
 # Configure destination path. DESTDIR is set in qmake-destination-path.pri
 DESTDIR = $$DESTDIR/plugins
@@ -70,7 +71,7 @@ UI_DIR = $$PWD/build/$$DESTINATION_PATH/ui
 
 DISTFILES += \
     dependencies.cfg \
-    spotify.json.in \
+    plexmedia.json.in \
     version.txt.in \
     README.md
 

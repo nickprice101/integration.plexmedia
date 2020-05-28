@@ -26,6 +26,8 @@
 #include <QNetworkReply>
 #include <QTimer>
 
+#include <QSysInfo>
+
 #include "yio-interface/entities/mediaplayerinterface.h"
 #include "yio-model/mediaplayer/albummodel_mediaplayer.h"
 #include "yio-model/mediaplayer/searchmodel_mediaplayer.h"
@@ -33,18 +35,18 @@
 #include "yio-plugin/plugin.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// SPOTIFY FACTORY
+//// PLEXMEDIA FACTORY
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const bool USE_WORKER_THREAD = false;
 
-class SpotifyPlugin : public Plugin {
+class PlexMediaPlugin : public Plugin {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "YIO.PluginInterface" FILE "spotify.json")
+    Q_PLUGIN_METADATA(IID "YIO.PluginInterface" FILE "plexmedia.json")
 
  public:
-    SpotifyPlugin();
+    PlexMediaPlugin();
 
     // Plugin interface
  protected:
@@ -54,14 +56,14 @@ class SpotifyPlugin : public Plugin {
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// SPOTIFY CLASS
+//// PLEXMEDIA CLASS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class Spotify : public Integration {
+class PlexMedia : public Integration {
     Q_OBJECT
 
  public:
-    explicit Spotify(const QVariantMap& config, EntitiesInterface* entities, NotificationsInterface* notifications,
+    explicit PlexMedia(const QVariantMap& config, EntitiesInterface* entities, NotificationsInterface* notifications,
                      YioAPIInterface* api, ConfigInterface* configObj, Plugin* plugin);
 
     void sendCommand(const QString& type, const QString& entitId, int command, const QVariant& param) override;
@@ -76,21 +78,22 @@ class Spotify : public Integration {
     void requestReady(const QVariantMap& obj, const QString& url);
 
  private:
-    // Spotify API calls
+    // PlexMedia API calls
     void search(QString query);
     void search(QString query, QString type);
-    void search(QString query, QString type, QString limit, QString offset);
     void getAlbum(QString id);
     void getPlaylist(QString id);
     void getUserPlaylists();
 
-    // Spotify API authentication
-    void refreshAccessToken();
+    // PlexMedia API authentication
+    void getMachineIdentifier();
+    void requestAuthToken();
 
-    // Spotify Connect API calls
-    void getCurrentPlayer();
+    // PlexMedia status API calls
+    void getCurrentPlayer();  //subsribtion option is possible but not advisable as connection is not kept open.
 
     void updateEntity(const QString& entity_id, const QVariantMap& attr);
+    void updateBrowseModel(BrowseModel * model);
 
     // get and post requests
     void getRequest(const QString& url, const QString& params);
@@ -98,28 +101,52 @@ class Spotify : public Integration {
     void putRequest(const QString& url, const QString& params);  // TODO(marton): change param to QUrlQuery
                                                                  // QUrlQuery query;
 
-    //    query.addQueryItem("username", "test");
-    //    query.addQueryItem("password", "test");
+    void getPollRequest(const QString& url, const QString& params);  //returns player info from /client endpoint in XML format
 
-    //    url.setQuery(query.query());
+    // speaker/source selection
+    void changeSpeaker(const QString& id);  //change the speaker/source
+    void getSpeakers(const QVariantMap& map);  //returns model populated with speakers/sources
 
  private slots:  // NOLINT open issue: https://github.com/cpplint/cpplint/pull/99
-    void onTokenTimeOut();
     void onPollingTimerTimeout();
 
  private:
-    bool    m_startup = true;
+    bool    m_speakerRequest = true;
     QString m_entityId;
 
     // polling timer
     QTimer* m_pollingTimer;
 
-    // Spotify auth stuff
-    QString m_clientId;
-    QString m_clientSecret;
-    QString m_accessToken;
-    QString m_refreshToken;
-    int     m_tokenExpire;  // in seconds
-    QTimer* m_tokenTimeOutTimer;
-    QString m_apiURL = "https://api.spotify.com";
+    // PMS details
+    QString m_serverIP;
+    QString m_serverPort;
+    QString m_serverURL;
+    QString m_serverId;
+
+    // Yio details
+    QByteArray m_remoteId = QSysInfo::machineUniqueId();
+    QByteArray m_remoteSys = "yioRemote"; //OS name
+    QByteArray m_remoteName = "My YIO Remote"; //Device name
+
+    // Player details
+    QString m_playerId;
+    QString m_playerIP;
+    QString m_playerPort = "0"; //set as 0 for default (no info)
+    QString m_playerURL;
+    QString m_playerPlatform; //used to track issue and bugs with different platforms. I.e. iOS catastropically crashes out on refreshPlayQueue request (as of 18/05/2020).
+    QString m_playerQueue; //now playing queue Id
+    QString m_playerCurrentTrack = "0"; //store current track to reduce polling burden. Set as 0 for default (no info)
+    QString m_playerState;
+    int  m_playerDuration;
+    int  m_playerTime;
+    int  m_playerVol = 100; //track volume, default to max
+    bool m_playerConnected = false;
+    bool m_directConn = true;
+    bool m_newTrack = true;
+    int  m_cmdId = 0; //cmdId is used by Plex to track the order of requests
+
+    // Plex auth
+    QString m_clientUser;
+    QString m_clientPass;
+    QString m_authToken;
 };

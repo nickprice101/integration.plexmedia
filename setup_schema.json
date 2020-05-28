@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org",
-    "$id": "http://yio-remote.com/spotify.json",
+    "$id": "http://yio-remote.com/plexmedia.json",
     "type": "object",
-    "title": "YIO Integration Spotify Schema",
-    "description": "Required data points to set up a Spotifyintegrations.",
+    "title": "YIO Integration Plex Media Schema",
+    "description": "Required data points to set up a Plex Media integration.",
     "default": {},
     "additionalProperties": true,
     "examples": [
@@ -58,7 +58,7 @@
             "description": "Not user input. A unique entity id.",
             "default": "",
             "examples": [
-                "spotify.spotify",
+                "plexmedia.plex",
                 "6550f44c-7f11-11ea-bc55-0242ac130003"
             ]
         }
