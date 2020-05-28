@@ -58,8 +58,11 @@ unix {
 QMAKE_SUBSTITUTES += plexmedia.json.in version.txt.in
 # output path must be included for the output file from QMAKE_SUBSTITUTES
 INCLUDEPATH += $$OUT_PWD
-HEADERS  += src/plexmedia.h
-SOURCES  += src/plexmedia.cpp
+HEADERS  += src/plexmedia.h \
+    other_updates/mediaplayer.h \
+    other_updates/mediaplayerinterface.h
+SOURCES  += src/plexmedia.cpp \
+    other_updates/mediaplayer.cpp
 TARGET    = plexmedia
 
 # Configure destination path. DESTDIR is set in qmake-destination-path.pri
@@ -71,6 +74,9 @@ UI_DIR = $$PWD/build/$$DESTINATION_PATH/ui
 
 DISTFILES += \
     dependencies.cfg \
+    other_updates/Card.qml \
+    other_updates/CardSpeakers.qml \
+    other_updates/ContextMenu.qml \
     plexmedia.json.in \
     version.txt.in \
     README.md
