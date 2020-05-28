@@ -798,7 +798,7 @@ void PlexMedia::getSpeakers(const QVariantMap& map) {
     QString subtitle = "";
     QString type = "speaker";
     QString image = "";
-    QStringList commands = {"CONNECT"};
+    QStringList commands = {"CONNECT"}; // default
     BrowseModel* allPlayers = new BrowseModel(nullptr, id, title, subtitle, type, image, commands);
     //Loop through all players.
     QVariantList players = map.value("MediaContainer").toMap().value("Metadata").toList();
@@ -807,8 +807,18 @@ void PlexMedia::getSpeakers(const QVariantMap& map) {
         id       = players[i].toMap().value("Player").toMap().value("machineIdentifier").toString();
 
         title    = players[i].toMap().value("Player").toMap().value("title").toString();
-        if (players[i].toMap().value("Player").toMap().value("local").toBool()) { title += " (Local)";
-        } else { title += " (Remote)"; }
+        if (players[i].toMap().value("Player").toMap().value("machineIdentifier").toString() == m_playerId) {
+            title += " (Connected)";
+            QStringList commands = {}; // typically cannot control remote devices
+        } else {
+            if (players[i].toMap().value("Player").toMap().value("local").toBool()) {
+                title += " (Local)";
+                QStringList commands = {"CONNECT"};
+            } else {
+                title += " (Remote)";
+                QStringList commands = {}; // typically cannot control remote devices
+            }
+        }
 
         subtitle = players[i].toMap().value("title").toString();
         if (subtitle.length() == 0) { subtitle = "Unknown"; }
