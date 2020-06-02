@@ -71,12 +71,6 @@ UI_DIR = $$PWD/build/$$DESTINATION_PATH/ui
 
 DISTFILES += \
     dependencies.cfg \
-    other_updates/Card._qml_ \
-    other_updates/CardSpeakers._qml_ \
-    other_updates/ContextMenu._qml_  \
-    other_updates/mediaplayer._cpp_ \
-    other_updates/mediaplayer._h_ \
-    other_updates/mediaplayerinterface._h_ \
     plexmedia.json.in \
     setup_schema.json \
     version.txt.in \

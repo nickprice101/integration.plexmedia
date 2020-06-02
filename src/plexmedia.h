@@ -31,6 +31,7 @@
 #include "yio-interface/entities/mediaplayerinterface.h"
 #include "yio-model/mediaplayer/albummodel_mediaplayer.h"
 #include "yio-model/mediaplayer/searchmodel_mediaplayer.h"
+#include "yio-model/mediaplayer/speakermodel_mediaplayer.h"
 #include "yio-plugin/integration.h"
 #include "yio-plugin/plugin.h"
 

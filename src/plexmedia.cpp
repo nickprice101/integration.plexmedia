@@ -795,11 +795,12 @@ void PlexMedia::getSpeakers(const QVariantMap& map) {
     qCDebug(m_logCategory) << "GET SPEAKERS";
     QString id = "";
     QString title = "";
-    QString subtitle = "";
+    QString description = "";
     QString type = "speaker";
     QString image = "";
     QStringList commands = {"CONNECT"}; // default
-    BrowseModel* allPlayers = new BrowseModel(nullptr, id, title, subtitle, type, image, commands);
+    QStringList supported = {}; // default
+    SpeakerModel* allPlayers = new SpeakerModel(nullptr, id, title, description, type, image, commands, supported);
     //Loop through all players.
     QVariantList players = map.value("MediaContainer").toMap().value("Metadata").toList();
     //qCDebug(m_logCategory) << "Number of players found: " << players.length();
@@ -820,15 +821,19 @@ void PlexMedia::getSpeakers(const QVariantMap& map) {
             }
         }
 
-        subtitle = players[i].toMap().value("title").toString();
-        if (subtitle.length() == 0) { subtitle = "Unknown"; }
-        subtitle += " (" + players[i].toMap().value("librarySectionTitle").toString() + ")";
+        description = players[i].toMap().value("title").toString();
+        if (description.length() == 0) { description = "Unknown"; }
+        description += " (" + players[i].toMap().value("librarySectionTitle").toString() + ")";
 
         image    = players[i].toMap().value("User").toMap().value("thumb").toString();
-        allPlayers->addItem(id, title, subtitle, type, image, commands);
+        allPlayers->addItem(id, title, description, type, image, commands, supported);
     }
     // update the entity
-    updateBrowseModel(allPlayers);
+    EntityInterface* entity = static_cast<EntityInterface*>(m_entities->getEntityInterface(m_entityId));
+    if (entity) {
+        MediaPlayerInterface* me = static_cast<MediaPlayerInterface*>(entity->getSpecificInterface());
+        me->setSpeakerModel(allPlayers);
+    }
     m_speakerRequest = false;
 }
 
@@ -1125,6 +1130,5 @@ void PlexMedia::updateBrowseModel(BrowseModel * model) {
     if (entity) {
         MediaPlayerInterface* me = static_cast<MediaPlayerInterface*>(entity->getSpecificInterface());
         me->setBrowseModel(model);
-        qCDebug(m_logCategory) << entity->getSpecificInterface();
     }
 }
