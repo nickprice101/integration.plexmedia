@@ -18,9 +18,9 @@ env:
   # Alternative non-LTS version:
   # QT_VERSION: 5.14.0
   # QT_CREATOR_VERSION: 4.11.0
-  APP_PRO: spotify.pro
-  APP_NAME: libspotify
-  PROJECT_NAME: integration.spotify
+  APP_PRO: plexmedia.pro
+  APP_NAME: libplexmedia
+  PROJECT_NAME: integration.plexmedia
   # Build artifact output path. Used to set project specific YIO_BIN env var in 'qt_creator' step.
   BIN_OUTPUT_PATH: "binaries"
   DEBUG_OUTPUT: "false"
