@@ -10,9 +10,9 @@
     pull_request:
 
   env:
-    APP_NAME: YIO-integration.spotify
+    APP_NAME: YIO-integration.plexmedia
     APP_ARCHITECTURE: RPi0
-    PROJECT_NAME: integration.spotify
+    PROJECT_NAME: integration.plexmedia
   
   jobs:
     build:
