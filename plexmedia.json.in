@@ -26,13 +26,13 @@
   ],
   \"category\" : \"Integrations\",
   \"description\":  [
-      \"Plex Media Integration for YIO\"
+      \"Plexmedia Integration for YIO\"
   ],
   \"url\": \"https://github.com/YIO-Remote/integration.plexmedia\",
   \"dependencies\" : [
       { \"name\" : \"app\", \"version\" : \"0.2.0\" },
       { \"name\" : \"remoteOS\", \"version\" : \"0.2.0\" }
   ],
-  \"mdns\": \"_plexmedia._tcp\",
+  \"mdns\": \"_plexmedia-connect._tcp\",
   \"setup_data\": $$CFG_SCHEMA
 }
