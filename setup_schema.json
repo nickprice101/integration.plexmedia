@@ -23,10 +23,10 @@
         "entity_id"
     ],
     "properties": {
-        "usernamen": {
+        "username": {
             "$id": "#/properties/username",
             "type": "string",
-            "title": "The username schema",
+            "title": "Plex username",
             "description": "Username for the linked Plex account.",
             "default": "",
             "examples": [
@@ -36,7 +36,7 @@
         "password": {
             "$id": "#/properties/password",
             "type": "string",
-            "title": "The password schema",
+            "title": "Plex password",
             "description": "Password for the linked Plex account.",
             "default": "",
             "examples": [
@@ -46,17 +46,17 @@
         "server_address": {
             "$id": "#/properties/server_address",
             "type": "string",
-            "title": "The server_address schema",
+            "title": "Address of your Plex server",
             "description": "IP of the local Plex server.",
             "default": "",
             "examples": [
                 "192.168.1.1"
             ]
         },
-        "server_address": {
+        "server_port": {
             "$id": "#/properties/server_port",
             "type": "string",
-            "title": "The server_port schema",
+            "title": "Port of your local Plex server",
             "description": "Port of the local Plex server.",
             "default": "32400",
             "examples": [
@@ -66,7 +66,7 @@
         "entity_id": {
             "$id": "#/properties/entity_id",
             "type": "string",
-            "title": "The entity_id schema",
+            "title": "Entity ID",
             "description": "Not user input. A unique entity id.",
             "default": "",
             "examples": [
