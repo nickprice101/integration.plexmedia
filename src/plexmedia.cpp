@@ -394,7 +394,7 @@ void PlexMedia::getAlbum(QString id) {
 
 void PlexMedia::getPlaylist(QString id) {
     QString url = m_serverURL + "/playlists/" + id + "/items";
-    if (id.count("playQueues") > 0) url = m_serverURL + id; //update if we are passed a playQueue
+    if (id.contains("playQueues") || id.contains("recentlyAdded")) url = m_serverURL + id; // update if we are passed a playQueue or recently played list
 
     QObject* context = new QObject(this);
 
@@ -404,6 +404,7 @@ void PlexMedia::getPlaylist(QString id) {
             QString title    = "";
             QString subtitle = "";
             QString type     = "playlist";
+            QString image    = "";
             QStringList commands = {"PLAY", "QUEUE"}; //this is albumView so commands relate to individual tracks.
 
             QVariantMap playlist = map.value("MediaContainer").toMap();
@@ -411,26 +412,45 @@ void PlexMedia::getPlaylist(QString id) {
                 QString id       = "/playQueues/ " + playlist.value("playQueueID").toString();
                 QString title    = "Now Playing";
                 QString subtitle = playlist.value("playQueueTotalCount").toString() + " item(s)";
+                //take first entry as thumb
+                QString image    = m_serverURL + playlist.value("Metadata").toList()[0].toMap().value("grandparentThumb").toString();
+            } else if (playlist.contains("title2")) {
+                QString id       = "/library/recentlyAdded";
+                QString title    = "Recently Added (" +  playlist.value("title1").toString() + ")";
+                QString subtitle = "25 item(s)";
+                //take first entry as thumb
+                QString image    = m_serverURL + playlist.value("Metadata").toList()[0].toMap().value("thumb").toString();
             } else { //if standard playlist
                 QString id       = playlist.value("ratingKey").toString();
                 QString title    = playlist.value("title").toString();
                 QString subtitle = playlist.value("leafCount").toString() + " item(s)";
+                //take first entry as thumb
+                QString image    = m_serverURL + playlist.value("Metadata").toList()[0].toMap().value("grandparentThumb").toString();
             }
-            //take first entry as thumb
-            QString image    = m_serverURL + playlist.value("Metadata").toList()[0].toMap().value("grandparentThumb").toString();
 
             BrowseModel* thisPlaylist = new BrowseModel(nullptr, id, title, subtitle, type, image, commands);
 
             // add tracks to playlist
             QVariantList tracks = map.value("MediaContainer").toMap().value("Metadata").toList();
-            for (int i = 0; i < tracks.length(); i++) {
+            int listLength = tracks.length();
+            if (id.contains("recentlyAdded")) { listLength = 25; } // only show first 25 for recently added to avoid overly long lists. This is also the max for the music list using this method.
+            for (int i = 0; i < listLength; i++) {
                 QString id = "";
                 title = "";
                 subtitle = "";
 
                 id = tracks[i].toMap().value("ratingKey").toString();
                 title = tracks[i].toMap().value("title").toString();
-                subtitle = tracks[i].toMap().value("grandparentTitle").toString();
+                type = tracks[i].toMap().value("type").toString();
+                if (type == "season") { type = "show"; }
+
+                if (tracks[i].toMap().contains("grandparentTitle")) {
+                    subtitle = tracks[i].toMap().value("grandparentTitle").toString(); //track or tv show
+                } else if (tracks[i].toMap().contains("parentTitle")) { // album (via recenlty added)
+                    subtitle = tracks[i].toMap().value("parentTitle").toString();
+                } else if (tracks[i].toMap().contains("summary")) {
+                    subtitle = tracks[i].toMap().value("summary").toString(); //movie
+                }
 
                 // try and find an image. . Work backwards if we can't find anything.
                 QString thumb = "";
@@ -438,7 +458,7 @@ void PlexMedia::getPlaylist(QString id) {
                 } else if (tracks[i].toMap().contains("parentThumb")) { QString thumb = tracks[i].toMap().value("parentThumb").toString();
                 } else if (tracks[i].toMap().contains("grandparentThumb")) { QString thumb = tracks[i].toMap().value("grandparentThumb").toString(); }
 
-                thisPlaylist->addItem(id,title,subtitle,"track",m_serverURL + thumb,commands);
+                thisPlaylist->addItem(id,title,subtitle,type,m_serverURL + thumb,commands);
 
                 // update the entity
                 updateBrowseModel(thisPlaylist);
@@ -451,6 +471,7 @@ void PlexMedia::getPlaylist(QString id) {
 
 void PlexMedia::getUserPlaylists() {
     QString all_url = m_serverURL + "/playlists";
+    qCDebug(m_logCategory) << "SENDING PLAYLIST REQUESTS";
 
     QObject* context = new QObject(this);
     QObject::connect(this, &PlexMedia::requestReady, context, [=](const QVariantMap& map, const QString& rUrl) {
@@ -464,6 +485,10 @@ void PlexMedia::getUserPlaylists() {
             QStringList commands = {"PLAY", "SHUFFLE"};
 
             BrowseModel* allPlaylists = new BrowseModel(nullptr, id, title, subtitle, type, image, commands);
+
+            allPlaylists->addItem("/library/sections/3/recentlyAdded","Recently Added (Music)","25 item(s)",type,"",commands); // no image as don't want to have to make a call for it.
+            allPlaylists->addItem("/library/sections/1/recentlyAdded","Recently Added (TV Shows)","25 item(s)",type,"",commands);
+            allPlaylists->addItem("/library/sections/2/recentlyAdded","Recently Added (Movies)","25 item(s)",type,"",commands);
 
             // add playlists to model
             QVariantList playlists = map.value("MediaContainer").toMap().value("Metadata").toList();
